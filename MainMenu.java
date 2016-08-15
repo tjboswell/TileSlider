@@ -57,7 +57,6 @@ public class MainMenu extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == startButton) {
 				Rectangle bounds = getBounds();
-				System.out.println(bounds);
 				new PuzzleTypeMenu(bounds.width, bounds.height, bounds.x, bounds.y);
 				dispose();
 			} else if (e.getSource() == highScoresButton) {
