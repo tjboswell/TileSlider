@@ -1,4 +1,5 @@
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +30,9 @@ public class MainMenu extends JFrame {
 		gameLabel = new JLabel("TileSlider!");
 		gameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
+		Font gameLabelFont = gameLabel.getFont();
+		gameLabel.setFont(new Font(gameLabelFont.getName(), Font.PLAIN, gameLabelFont.getSize()*3));
+		
 		ButtonListener buttonListener = new ButtonListener();
 		startButton = new JButton("Start Game");
 		startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -41,12 +45,14 @@ public class MainMenu extends JFrame {
 		exitButton = new JButton("Exit Game");
 		exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		exitButton.addActionListener(buttonListener);
-		
+
+		mainPanel.add(Box.createGlue());
 		mainPanel.add(gameLabel);
 		mainPanel.add(Box.createGlue());
 		mainPanel.add(startButton);
 		mainPanel.add(highScoresButton);
 		mainPanel.add(exitButton);
+		mainPanel.add(Box.createGlue());
 		
 		this.add(mainPanel);
 		this.setVisible(true);

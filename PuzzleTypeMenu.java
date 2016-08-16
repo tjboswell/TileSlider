@@ -1,4 +1,7 @@
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -24,7 +27,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class PuzzleTypeMenu extends JFrame {
 	private JPanel mainPanel, puzzleSelectionPanel, sizePanel, previewPanel, bottomMenuPanel;
 	private JButton customImageButton, presetImageButton, backButton, startButton;
-	private JLabel puzzleSelectionLabel, puzzleSizeLabel, currentPuzzleSizeLabel, thumbnailLabel;
+	private JLabel puzzleOptionsLabel, puzzleSelectionLabel, puzzleSizeLabel, currentPuzzleSizeLabel, thumbnailLabel, thumbnailNameLabel, errorLabel;
 	private SpinnerModel puzzleSizeSpinnerModel;
 	private JSpinner puzzleSizeSpinner;
 	private JDialog presetDialog = new JDialog();
@@ -51,9 +54,14 @@ public class PuzzleTypeMenu extends JFrame {
 		
 		ButtonListener buttonListener = new ButtonListener();
 		SpinnerListener spinnerListener = new SpinnerListener();
-		imageChooser.setFileFilter(fileFilter);
+//		imageChooser.setFileFilter(fileFilter);
 		
-		puzzleSelectionLabel = new JLabel("Pick an puzzle type");
+		puzzleOptionsLabel = new JLabel("Puzzle Options");
+		Font puzzleOptionsLabelFont = puzzleOptionsLabel.getFont();
+		puzzleOptionsLabel.setFont(new Font(puzzleOptionsLabelFont.getName(), Font.PLAIN, puzzleOptionsLabelFont.getSize()*2));
+		puzzleOptionsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		puzzleSelectionLabel = new JLabel("Pick an image to use: ");
 		puzzleSelectionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		customImageButton = new JButton("Custom Image");
@@ -64,16 +72,19 @@ public class PuzzleTypeMenu extends JFrame {
 		presetImageButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		presetImageButton.addActionListener(buttonListener);
 		
-		puzzleSizeLabel = new JLabel("Select a puzzle size");
+		thumbnailLabel = new JLabel();
+		thumbnailLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		thumbnailNameLabel = new JLabel("No image selected");
+		thumbnailNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		puzzleSizeLabel = new JLabel("Select a puzzle size: ");
 		
 		puzzleSizeSpinnerModel = new SpinnerNumberModel(3, 3, 10, 1);
 		puzzleSizeSpinner = new JSpinner(puzzleSizeSpinnerModel);
 		puzzleSizeSpinner.addChangeListener(spinnerListener);
 		
 		currentPuzzleSizeLabel = new JLabel("x 3");
-		
-		thumbnailLabel = new JLabel("No image selected");
-		
 
 		backButton = new JButton("Back");
 		backButton.addActionListener(buttonListener);
@@ -81,22 +92,29 @@ public class PuzzleTypeMenu extends JFrame {
 		startButton = new JButton("Create Puzzle");
 		startButton.addActionListener(buttonListener);
 		
+		errorLabel = new JLabel();
+		errorLabel.setForeground(Color.RED);
+		errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
 		puzzleSelectionPanel.add(puzzleSelectionLabel);
 		puzzleSelectionPanel.add(customImageButton);
 		puzzleSelectionPanel.add(presetImageButton);
-		
+
+		previewPanel.add(thumbnailLabel);
+
 		sizePanel.add(puzzleSizeLabel);
 		sizePanel.add(puzzleSizeSpinner);
 		sizePanel.add(currentPuzzleSizeLabel);
 		
-		previewPanel.add(thumbnailLabel);
-
 		bottomMenuPanel.add(backButton);
 		bottomMenuPanel.add(startButton);
 
+		mainPanel.add(puzzleOptionsLabel);
 		mainPanel.add(puzzleSelectionPanel);
-		mainPanel.add(sizePanel);
 		mainPanel.add(previewPanel);
+		mainPanel.add(thumbnailNameLabel);
+		mainPanel.add(sizePanel);
+		mainPanel.add(errorLabel);
 		mainPanel.add(bottomMenuPanel);
 
 		this.add(mainPanel);
@@ -110,15 +128,19 @@ public class PuzzleTypeMenu extends JFrame {
 			    int returnVal = imageChooser.showOpenDialog(PuzzleTypeMenu.this);
 			    if (returnVal == JFileChooser.APPROVE_OPTION) {
 			    	try {
-						thumbnailLabel.setText(imageChooser.getSelectedFile().getName());
+						thumbnailNameLabel.setForeground(Color.BLACK);
+						thumbnailNameLabel.setText(imageChooser.getSelectedFile().getName());
 			    		originalImage = ImageIO.read(imageChooser.getSelectedFile());
 						ImageIcon imageIcon = new ImageIcon(originalImage);
 						Rectangle bounds = previewPanel.getBounds();
 						Rectangle imageBounds = Resizer.resize(originalImage.getWidth(), originalImage.getHeight(), bounds.width, bounds.height);
 						thumbnailImage = imageIcon.getImage().getScaledInstance(imageBounds.width, imageBounds.height, Image.SCALE_SMOOTH);
 						thumbnailLabel.setIcon(new ImageIcon(thumbnailImage));
+						errorLabel.setText("");
 					} catch (Exception e1) {
-						thumbnailLabel.setText("Error uploading image.");
+						thumbnailNameLabel.setForeground(Color.RED);
+						thumbnailNameLabel.setText("Error uploading image.");
+						thumbnailLabel.setIcon(null);
 					}
 			    }
 			} else if (e.getSource() == presetImageButton) {
@@ -128,7 +150,13 @@ public class PuzzleTypeMenu extends JFrame {
 				new MainMenu(bounds.width, bounds.height, bounds.x, bounds.y);
 				dispose();
 			} else if (e.getSource() == startButton) {
-				System.out.println("Creating puzzle");
+				if (originalImage == null) {
+					errorLabel.setText("Please select a valid image.");
+				} else {
+					Rectangle bounds = getBounds();
+					new PuzzleScreen(bounds.width, bounds.height, bounds.x, bounds.y, originalImage, (int) puzzleSizeSpinner.getValue());
+					dispose();
+				}
 			}
 		}
 	}
