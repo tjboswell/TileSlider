@@ -1,7 +1,9 @@
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,16 +19,19 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.Popup;
 import javax.swing.Timer;
 
 public class PuzzleScreen extends JFrame {
 	private JPanel mainPanel, puzzlePanel, infoPanel;
 	private JLabel[][] puzzleTileLabel;
-	private JLabel timerLabel, movesLabel, clickedLabel, enteredLabel;
-	private JButton quitButton;
+	private JLabel timerLabel, movesLabel, clickedLabel, enteredLabel, hintLabel;
+	private JButton quitButton, hintButton;
 	private int size, seconds, moves;
 	private GridBagConstraints constraints = new GridBagConstraints();
 	private Timer timer;
+	private BufferedImage hintImage;
 	private BufferedImage[] originalImages, images;
 	public PuzzleScreen(int width, int height, Integer x, Integer y, BufferedImage image, int puzzleSize) {
 		this.setSize(width, height);
@@ -37,6 +42,7 @@ public class PuzzleScreen extends JFrame {
 			this.setLocation(x, y);
 		}
 		this.size = puzzleSize;
+		this.hintImage = image;
 
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
@@ -60,7 +66,22 @@ public class PuzzleScreen extends JFrame {
 		timerLabel = new JLabel("Time: " + String.format("%02d:%02d", (seconds%3600)/60, seconds%60));
 		
 		movesLabel = new JLabel("Moves: " + moves);
-		originalImages = ImagePuzzler.puzzlify(image, puzzleSize);
+		
+		hintButton = new JButton("Hint");
+		hintButton.addActionListener(buttonListener);
+		BufferedImage resizedImage;
+		boolean largeWidth = image.getWidth() > this.getWidth();
+		boolean largeHeight = image.getHeight() > this.getHeight();
+		if (largeWidth || largeHeight) {
+			Rectangle bounds = getBounds();
+			resizedImage = new BufferedImage(bounds.width - 100, bounds.height - 100, BufferedImage.TYPE_INT_RGB);
+			Graphics g = resizedImage.createGraphics();
+			g.drawImage(image, 0, 0, bounds.width - 100, bounds.height - 100, null);
+			g.dispose();
+		} else {
+			resizedImage = image;
+		}
+		originalImages = ImagePuzzler.puzzlify(resizedImage, puzzleSize);
 		images = ImagePuzzler.shuffle(originalImages);
 		puzzleTileLabel = new JLabel[puzzleSize][puzzleSize];
 		
@@ -87,6 +108,7 @@ public class PuzzleScreen extends JFrame {
 		infoPanel.add(quitButton);
 		infoPanel.add(timerLabel);
 		infoPanel.add(movesLabel);
+		infoPanel.add(hintButton);
 		mainPanel.add(infoPanel);
 		mainPanel.add(puzzlePanel);
 		this.add(mainPanel);
@@ -106,6 +128,9 @@ public class PuzzleScreen extends JFrame {
 					new MainMenu(bounds.width, bounds.height, bounds.x, bounds.y);
 					dispose();
 				}
+			} else if (e.getSource() == hintButton) { 	
+				Rectangle bounds = getBounds();
+				new HintMenu(bounds.width, bounds.height, bounds.x, bounds.y, hintImage);
 			}
 		}
 	}
