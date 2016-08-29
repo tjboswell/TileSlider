@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
 public class ImagePuzzler {
 	public static BufferedImage[] puzzlify(BufferedImage image, int puzzleSize) {
 		int numTiles = puzzleSize * puzzleSize;
@@ -47,5 +50,18 @@ public class ImagePuzzler {
 		graphics.fill(new Rectangle(0, 0, shuffledTiles[shuffledTiles.length - 1].getWidth(), shuffledTiles[shuffledTiles.length - 1].getHeight()));
 		graphics.dispose();
 		return shuffledTiles;
+	}
+	
+	public static boolean checkWin(BufferedImage[] originalImages, JLabel[][] tiles, int size) {
+		System.out.println(originalImages);
+		System.out.println(tiles);
+		int count = 0;
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				System.out.println(i + " " + j + " " + count);
+				count++;
+			}
+		}
+		return false;
 	}
 }
