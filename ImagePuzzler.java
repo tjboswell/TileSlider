@@ -32,7 +32,7 @@ public class ImagePuzzler {
 		return tiles;
 	}
 	
-	public static BufferedImage[] shuffle(BufferedImage[] tiles) {
+	public static TilesAndOrder shuffle(BufferedImage[] tiles) {
 		int numTiles = tiles.length;
 		List<Integer> list = new ArrayList<>();
 		BufferedImage[] shuffledTiles = new BufferedImage[numTiles];
@@ -40,27 +40,32 @@ public class ImagePuzzler {
 			list.add(i);
 		}
 		Collections.shuffle(list);
+		Graphics2D graphics = tiles[tiles.length - 1].createGraphics();
+		graphics.setColor(Color.BLACK);
+		graphics.fill(new Rectangle(0, 0, tiles[tiles.length - 1].getWidth(), tiles[tiles.length - 1].getHeight()));
 		int count = 0;
 		for (int j : list) {
 			shuffledTiles[count] = tiles[j];
 			count++;
 		}
-		Graphics2D graphics = shuffledTiles[shuffledTiles.length - 1].createGraphics();
-		graphics.setColor(Color.BLACK);
-		graphics.fill(new Rectangle(0, 0, shuffledTiles[shuffledTiles.length - 1].getWidth(), shuffledTiles[shuffledTiles.length - 1].getHeight()));
+		
 		graphics.dispose();
-		return shuffledTiles;
+		System.out.println(list);
+		return new TilesAndOrder(shuffledTiles, list);
 	}
 	
-	public static boolean checkWin(BufferedImage[] originalImages, JLabel[][] tiles, int size) {
-		int count = 0;
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-
-				System.out.println(originalImages[count]);
-				count++;
-			}
+	public static boolean checkWin(List<Integer> order) {
+		List<Integer> sorted = new ArrayList<Integer>(order);
+		Collections.sort(sorted);
+		return order.equals(sorted);
+	}
+	public static class TilesAndOrder {
+		public BufferedImage[] tiles;
+		public List<Integer> order;
+		
+		public TilesAndOrder(BufferedImage[] tiles, List<Integer> order) {
+			this.tiles = tiles;
+			this.order = order;
 		}
-		return false;
 	}
 }

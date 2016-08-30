@@ -80,7 +80,7 @@ public class PuzzleTypeMenu extends JFrame {
 		
 		puzzleSizeLabel = new JLabel("Select a puzzle size: ");
 		
-		puzzleSizeSpinnerModel = new SpinnerNumberModel(3, 3, 10, 1);
+		puzzleSizeSpinnerModel = new SpinnerNumberModel(3, 2, 10, 1);
 		puzzleSizeSpinner = new JSpinner(puzzleSizeSpinnerModel);
 		puzzleSizeSpinner.addChangeListener(spinnerListener);
 		

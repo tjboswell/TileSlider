@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.time.LocalTime;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -31,8 +32,11 @@ public class PuzzleScreen extends JFrame {
 	private int size, seconds, moves;
 	private GridBagConstraints constraints = new GridBagConstraints();
 	private Timer timer;
+	private long startTime;
 	private BufferedImage hintImage;
 	private BufferedImage[] originalImages, images;
+	private List<Integer> order;
+	private boolean gameOver = false;
 	public PuzzleScreen(int width, int height, Integer x, Integer y, BufferedImage image, int puzzleSize) {
 		this.setSize(width, height);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -59,6 +63,7 @@ public class PuzzleScreen extends JFrame {
 		
 		timer = new Timer(1000, timerListener);
 		timer.start();
+		startTime = System.currentTimeMillis();
 
 		quitButton = new JButton("Quit");
 		quitButton.addActionListener(buttonListener);
@@ -82,7 +87,9 @@ public class PuzzleScreen extends JFrame {
 			resizedImage = image;
 		}
 		originalImages = ImagePuzzler.puzzlify(resizedImage, puzzleSize);
-		images = ImagePuzzler.shuffle(originalImages); 
+		ImagePuzzler.TilesAndOrder tilesAndOrder = ImagePuzzler.shuffle(originalImages);
+		images = tilesAndOrder.tiles;
+		order = tilesAndOrder.order;
 		puzzleTileLabel = new JLabel[puzzleSize][puzzleSize];
 		
 		//Goes through the tiles that have been created
@@ -97,8 +104,11 @@ public class PuzzleScreen extends JFrame {
 				puzzleTileLabel[i][j] = new JLabel();
 				puzzleTileLabel[i][j].setIcon(new ImageIcon(images[count]));
 				puzzleTileLabel[i][j].addMouseListener(tileListener);
-				if (count == (puzzleSize * puzzleSize) - 1) {
+				if (order.get(count) == (puzzleSize * puzzleSize) - 1) {
 					puzzleTileLabel[i][j].setToolTipText("empty");
+				} else {
+					System.out.println(count);
+					puzzleTileLabel[i][j].setToolTipText(Integer.toString(order.get(count)));
 				}
 				puzzlePanel.add(puzzleTileLabel[i][j], constraints);
 				count++;
@@ -120,14 +130,18 @@ public class PuzzleScreen extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == quitButton) {
-				//Show a confirmation dialog with yes and no options
-				int dialogOptions = JOptionPane.YES_NO_OPTION;
-				int dialogResponse = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit? Your progress will not be saved.", "Warning", dialogOptions);
-				if (dialogResponse == 0) { //if yes, return to the main menu
-					Rectangle bounds = getBounds();
-					new MainMenu(bounds.width, bounds.height, bounds.x, bounds.y);
-					dispose();
+				if (!gameOver) {
+					//Show a confirmation dialog with yes and no options
+					int dialogOptions = JOptionPane.YES_NO_OPTION;
+					int dialogResponse = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit? Your progress will not be saved.", "Warning", dialogOptions);
+					if (dialogResponse != 0) { //if no, do nothing. otherwise, quit to main menu
+						return;
+					}
 				}
+				Rectangle bounds = getBounds();
+				new MainMenu(bounds.width, bounds.height, bounds.x, bounds.y);
+				dispose();
+
 			} else if (e.getSource() == hintButton) { 	
 				Rectangle bounds = getBounds();
 				new HintMenu(bounds.width, bounds.height, bounds.x, bounds.y, hintImage);
@@ -149,44 +163,46 @@ public class PuzzleScreen extends JFrame {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			boolean clicked = false;
-			for (int i = 0; i < size; i++) {
-				for (int j = 0; j < size; j++) {
-					if (!clicked && puzzleTileLabel[i][j].equals(e.getSource())) {
-						System.out.println("Clicked tile at row: " + j + ", column: " + i);
-						Coordinate top = new Coordinate(i, j - 1);
-						Coordinate right = new Coordinate(i + 1, j);
-						Coordinate bottom = new Coordinate(i, j + 1);
-						Coordinate left = new Coordinate(i - 1, j);
-						Swap swapper = new Swap();
-						//Check the 4 (or fewer) valid tiles around the clicked tile.
-						//If the adjacent tile has the tooltip text "empty", swap the tiles
-						if (top.isValid()) {
-							if (puzzleTileLabel[top.x][top.y].getToolTipText() == "empty") {
-								swapper.swap(i, j, top.x, top.y);
-								incrementMoves();
-								clicked = true;
+			if (!gameOver) {
+				boolean clicked = false;
+				for (int i = 0; i < size; i++) {
+					for (int j = 0; j < size; j++) {
+						if (!clicked && puzzleTileLabel[i][j].equals(e.getSource())) {
+							System.out.println("Clicked tile at row: " + j + ", column: " + i);
+							Coordinate top = new Coordinate(i, j - 1);
+							Coordinate right = new Coordinate(i + 1, j);
+							Coordinate bottom = new Coordinate(i, j + 1);
+							Coordinate left = new Coordinate(i - 1, j);
+							Swap swapper = new Swap();
+							//Check the 4 (or fewer) valid tiles around the clicked tile.
+							//If the adjacent tile has the tooltip text "empty", swap the tiles
+							if (top.isValid()) {
+								if (puzzleTileLabel[top.x][top.y].getToolTipText() == "empty") {
+									swapper.swap(i, j, top.x, top.y);
+									incrementMoves();
+									clicked = true;
+								}
 							}
-						}
-						if (right.isValid()) {
-							if (puzzleTileLabel[right.x][right.y].getToolTipText() == "empty") {
-								swapper.swap(i, j, right.x, right.y);
-								incrementMoves();
-								clicked = true;
+							if (right.isValid()) {
+								if (puzzleTileLabel[right.x][right.y].getToolTipText() == "empty") {
+									swapper.swap(i, j, right.x, right.y);
+									incrementMoves();
+									clicked = true;
+								}
 							}
-						}
-						if (bottom.isValid()) {
-							if (puzzleTileLabel[bottom.x][bottom.y].getToolTipText() == "empty") {
-								swapper.swap(i, j, bottom.x, bottom.y);
-								incrementMoves();
-								clicked = true;
+							if (bottom.isValid()) {
+								if (puzzleTileLabel[bottom.x][bottom.y].getToolTipText() == "empty") {
+									swapper.swap(i, j, bottom.x, bottom.y);
+									incrementMoves();
+									clicked = true;
+								}
 							}
-						}
-						if (left.isValid()) {
-							if (puzzleTileLabel[left.x][left.y].getToolTipText() == "empty") {
-								swapper.swap(i, j, left.x, left.y);
-								incrementMoves();
-								clicked = true;
+							if (left.isValid()) {
+								if (puzzleTileLabel[left.x][left.y].getToolTipText() == "empty") {
+									swapper.swap(i, j, left.x, left.y);
+									incrementMoves();
+									clicked = true;
+								}
 							}
 						}
 					}
@@ -197,7 +213,13 @@ public class PuzzleScreen extends JFrame {
 		public void incrementMoves() {
 			moves++;
 			movesLabel.setText("Moves: " + moves);
-			ImagePuzzler.checkWin(originalImages, puzzleTileLabel, size);
+			if (ImagePuzzler.checkWin(order)) {
+				timer.stop();
+				int seconds = (int) ((System.currentTimeMillis() - startTime) / 1000);
+				JOptionPane.showMessageDialog(null, "You Win!\n Moves: " + moves + " Time: " + String.format("%02d:%02d", (seconds%3600)/60, seconds%60));
+				gameOver = true;
+				HighScoresManager.writeHighScores(size, seconds, moves);
+			}
 		}
 		@Override
 		//Set the clickedLabel, aka the original tile
@@ -242,6 +264,11 @@ public class PuzzleScreen extends JFrame {
 			Component temp = components[swapFrom];
 			components[swapFrom] = components[swapTo];
 			components[swapTo] = temp;
+			System.out.println(order);
+			int tempInt = order.get(swapFrom);
+			order.set(swapFrom, order.get(swapTo));
+			order.set(swapTo, tempInt);
+			System.out.println(order);
 			int count = 0;
 			for (int x = 0; x < size; x++) {
 				for (int y = 0; y < size; y++) {

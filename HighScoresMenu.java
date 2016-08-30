@@ -51,7 +51,7 @@ public class HighScoresMenu extends JFrame {
 		highScoresHeaderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		highScoresPanel.add(highScoresHeaderLabel);
 		
-		highScores = HighScoresReader.HighScores();
+		highScores = HighScoresManager.readHighScores();
 		for (int i = 0; i < highScores.size(); i++) {
 			String[] splitHighScore = highScores.get(i).split(",");
 			String puzzleSize = splitHighScore[0];
