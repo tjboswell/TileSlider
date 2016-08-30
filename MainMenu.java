@@ -66,6 +66,9 @@ public class MainMenu extends JFrame {
 				new PuzzleTypeMenu(bounds.width, bounds.height, bounds.x, bounds.y);
 				dispose();
 			} else if (e.getSource() == highScoresButton) {
+				Rectangle bounds = getBounds();
+				new HighScoresMenu(bounds.width, bounds.height, bounds.x, bounds.y);
+				dispose();
 				
 			} else if (e.getSource() == exitButton) {
 				System.exit(0);

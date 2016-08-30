@@ -82,7 +82,7 @@ public class PuzzleScreen extends JFrame {
 			resizedImage = image;
 		}
 		originalImages = ImagePuzzler.puzzlify(resizedImage, puzzleSize);
-		images = ImagePuzzler.shuffle(originalImages);
+		images = ImagePuzzler.shuffle(originalImages); 
 		puzzleTileLabel = new JLabel[puzzleSize][puzzleSize];
 		
 		//Goes through the tiles that have been created

@@ -53,12 +53,11 @@ public class ImagePuzzler {
 	}
 	
 	public static boolean checkWin(BufferedImage[] originalImages, JLabel[][] tiles, int size) {
-		System.out.println(originalImages);
-		System.out.println(tiles);
 		int count = 0;
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				System.out.println(i + " " + j + " " + count);
+
+				System.out.println(originalImages[count]);
 				count++;
 			}
 		}
