@@ -75,17 +75,24 @@ public class PuzzleScreen extends JFrame {
 		hintButton = new JButton("Hint");
 		hintButton.addActionListener(buttonListener);
 		BufferedImage resizedImage;
-		boolean largeWidth = image.getWidth() > this.getWidth();
-		boolean largeHeight = image.getHeight() > this.getHeight();
+		Rectangle bounds = getBounds();
+		boolean largeWidth = image.getWidth() > bounds.width;
+		boolean largeHeight = image.getHeight() > bounds.height;
 		if (largeWidth || largeHeight) {
-			Rectangle bounds = getBounds();
-			resizedImage = new BufferedImage(bounds.width - 100, bounds.height - 100, BufferedImage.TYPE_INT_RGB);
+			double widthRatio = ((double) (bounds.width - 50)) / image.getWidth();
+			double heightRatio = ((double) (bounds.height - 50)) / image.getHeight();
+			double ratio = Math.min(widthRatio, heightRatio);
+			int newWidth = (int) Math.round(image.getWidth() * ratio);
+			int newHeight = (int) Math.round(image.getHeight() * ratio);
+			resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
 			Graphics g = resizedImage.createGraphics();
-			g.drawImage(image, 0, 0, bounds.width - 100, bounds.height - 100, null);
+			g.drawImage(image, 0, 0, newWidth, newHeight, null);
 			g.dispose();
 		} else {
 			resizedImage = image;
 		}
+				
+
 		originalImages = ImagePuzzler.puzzlify(resizedImage, puzzleSize);
 		ImagePuzzler.TilesAndOrder tilesAndOrder = ImagePuzzler.shuffle(originalImages);
 		images = tilesAndOrder.tiles;
