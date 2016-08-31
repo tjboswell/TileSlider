@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -80,7 +81,7 @@ public class PuzzleTypeMenu extends JFrame {
 		
 		puzzleSizeLabel = new JLabel("Select a puzzle size: ");
 		
-		puzzleSizeSpinnerModel = new SpinnerNumberModel(3, 2, 10, 1);
+		puzzleSizeSpinnerModel = new SpinnerNumberModel(3, 3, 10, 1);
 		puzzleSizeSpinner = new JSpinner(puzzleSizeSpinnerModel);
 		puzzleSizeSpinner.addChangeListener(spinnerListener);
 		
@@ -122,29 +123,38 @@ public class PuzzleTypeMenu extends JFrame {
 	}
 	private class ButtonListener implements ActionListener {
 
+		public void setImage() {
+			try {
+				thumbnailNameLabel.setForeground(Color.BLACK);
+				thumbnailNameLabel.setText(imageChooser.getSelectedFile().getName());
+	    		originalImage = ImageIO.read(imageChooser.getSelectedFile());
+				ImageIcon imageIcon = new ImageIcon(originalImage);
+				Rectangle bounds = previewPanel.getBounds();
+				Rectangle imageBounds = Resizer.resize(originalImage.getWidth(), originalImage.getHeight(), bounds.width, bounds.height);
+				thumbnailImage = imageIcon.getImage().getScaledInstance(imageBounds.width, imageBounds.height, Image.SCALE_SMOOTH);
+				thumbnailLabel.setIcon(new ImageIcon(thumbnailImage));
+				errorLabel.setText("");
+			} catch (Exception e1) {
+				thumbnailNameLabel.setForeground(Color.RED);
+				thumbnailNameLabel.setText("Error uploading image.");
+				thumbnailLabel.setIcon(null);
+			}
+		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == customImageButton) {
+				imageChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 			    int returnVal = imageChooser.showOpenDialog(PuzzleTypeMenu.this);
 			    if (returnVal == JFileChooser.APPROVE_OPTION) {
-			    	try {
-						thumbnailNameLabel.setForeground(Color.BLACK);
-						thumbnailNameLabel.setText(imageChooser.getSelectedFile().getName());
-			    		originalImage = ImageIO.read(imageChooser.getSelectedFile());
-						ImageIcon imageIcon = new ImageIcon(originalImage);
-						Rectangle bounds = previewPanel.getBounds();
-						Rectangle imageBounds = Resizer.resize(originalImage.getWidth(), originalImage.getHeight(), bounds.width, bounds.height);
-						thumbnailImage = imageIcon.getImage().getScaledInstance(imageBounds.width, imageBounds.height, Image.SCALE_SMOOTH);
-						thumbnailLabel.setIcon(new ImageIcon(thumbnailImage));
-						errorLabel.setText("");
-					} catch (Exception e1) {
-						thumbnailNameLabel.setForeground(Color.RED);
-						thumbnailNameLabel.setText("Error uploading image.");
-						thumbnailLabel.setIcon(null);
-					}
+			    	this.setImage();
 			    }
 			} else if (e.getSource() == presetImageButton) {
-				
+				File currentDirectory = new File(System.getProperty("user.dir") + System.getProperty("file.separator") + "images");
+				imageChooser.setCurrentDirectory(currentDirectory);
+				int returnVal = imageChooser.showOpenDialog(PuzzleTypeMenu.this);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					this.setImage();
+				}
 			} else if (e.getSource() == backButton) {
 				Rectangle bounds = getBounds();
 				new MainMenu(bounds.width, bounds.height, bounds.x, bounds.y);

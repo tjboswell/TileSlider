@@ -106,9 +106,6 @@ public class PuzzleScreen extends JFrame {
 				puzzleTileLabel[i][j].addMouseListener(tileListener);
 				if (order.get(count) == (puzzleSize * puzzleSize) - 1) {
 					puzzleTileLabel[i][j].setToolTipText("empty");
-				} else {
-					System.out.println(count);
-					puzzleTileLabel[i][j].setToolTipText(Integer.toString(order.get(count)));
 				}
 				puzzlePanel.add(puzzleTileLabel[i][j], constraints);
 				count++;

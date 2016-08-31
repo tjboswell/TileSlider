@@ -50,7 +50,6 @@ public class ImagePuzzler {
 		}
 		
 		graphics.dispose();
-		System.out.println(list);
 		return new TilesAndOrder(shuffledTiles, list);
 	}
 	
