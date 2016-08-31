@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-
 public class ImagePuzzler {
 	public static BufferedImage[] puzzlify(BufferedImage image, int puzzleSize) {
 		int numTiles = puzzleSize * puzzleSize;

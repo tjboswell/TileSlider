@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -13,7 +12,6 @@ import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,7 +29,6 @@ public class PuzzleTypeMenu extends JFrame {
 	private JLabel puzzleOptionsLabel, puzzleSelectionLabel, puzzleSizeLabel, currentPuzzleSizeLabel, thumbnailLabel, thumbnailNameLabel, errorLabel;
 	private SpinnerModel puzzleSizeSpinnerModel;
 	private JSpinner puzzleSizeSpinner;
-	private JDialog presetDialog = new JDialog();
 	private BufferedImage originalImage;
 	private Image thumbnailImage;
 	final JFileChooser imageChooser = new JFileChooser();
@@ -55,7 +52,6 @@ public class PuzzleTypeMenu extends JFrame {
 		
 		ButtonListener buttonListener = new ButtonListener();
 		SpinnerListener spinnerListener = new SpinnerListener();
-//		imageChooser.setFileFilter(fileFilter);
 		
 		puzzleOptionsLabel = new JLabel("Puzzle Options");
 		Font puzzleOptionsLabelFont = puzzleOptionsLabel.getFont();

@@ -3,14 +3,12 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.time.LocalTime;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -20,14 +18,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.Popup;
 import javax.swing.Timer;
 
 public class PuzzleScreen extends JFrame {
 	private JPanel mainPanel, puzzlePanel, infoPanel;
 	private JLabel[][] puzzleTileLabel;
-	private JLabel timerLabel, movesLabel, clickedLabel, enteredLabel, hintLabel;
+	private JLabel timerLabel, movesLabel, clickedLabel, enteredLabel;
 	private JButton quitButton, hintButton;
 	private int size, seconds, moves;
 	private GridBagConstraints constraints = new GridBagConstraints();
