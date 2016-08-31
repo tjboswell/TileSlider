@@ -4,9 +4,15 @@ by Tyler Boswell
   
 __Features:__  
 * Upload your own image or select from a list of 8 preset images
-	* Creates a 3x3 to 10x10 sliding puzzle  
-* Tracks high scores for different puzzle sizes  
+	* Creates a 3x3 to 10x10 sliding puzzle
+* Tracks high scores for different puzzle sizes
 	* Based on lowest time (also tracks moves)
 * Allows for clicking or sliding tiles
 * Hint button to show original image
 * Scales images to fit without stretching
+
+__To Run:__
+* Click the "Release" link from the repo
+* Download the latest version of TileSlider.zip
+* Extract the zip and run TileSlider.jar
+* Solve puzzles!
