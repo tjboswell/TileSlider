@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ImagePuzzler {
+	//divides the image up and returns the tiles
 	public static BufferedImage[] puzzlify(BufferedImage image, int puzzleSize) {
 		int numTiles = puzzleSize * puzzleSize;
 		int tileWidth = image.getWidth() / puzzleSize;
@@ -29,6 +30,7 @@ public class ImagePuzzler {
 		return tiles;
 	}
 	
+	//shuffles the tiles and returns the shuffled tiles as well as an integer list to keep track of the order of the tiles
 	public static TilesAndOrder shuffle(BufferedImage[] tiles) {
 		int numTiles = tiles.length;
 		List<Integer> list = new ArrayList<>();
@@ -50,6 +52,7 @@ public class ImagePuzzler {
 		return new TilesAndOrder(shuffledTiles, list);
 	}
 	
+	//checks if the sorted list of tile order equals the list of the current tile order
 	public static boolean checkWin(List<Integer> order) {
 		List<Integer> sorted = new ArrayList<Integer>(order);
 		Collections.sort(sorted);

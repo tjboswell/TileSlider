@@ -27,6 +27,7 @@ public class MainMenu extends JFrame {
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 		
+		//game title
 		gameLabel = new JLabel("TileSlider!");
 		gameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
@@ -34,6 +35,8 @@ public class MainMenu extends JFrame {
 		gameLabel.setFont(new Font(gameLabelFont.getName(), Font.PLAIN, gameLabelFont.getSize()*3));
 		
 		ButtonListener buttonListener = new ButtonListener();
+
+		//main menu buttons
 		startButton = new JButton("Start Game");
 		startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		startButton.addActionListener(buttonListener);

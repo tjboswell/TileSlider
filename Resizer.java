@@ -1,5 +1,6 @@
 import java.awt.Rectangle;
 
+//used for thumbnail resizing on the puzzle options menu
 public class Resizer {
 	public static Rectangle resize(int originalWidth, int originalHeight, int containerWidth, int containerHeight) {
 		int newWidth = originalWidth;

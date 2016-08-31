@@ -10,6 +10,7 @@ public class HighScoresManager {
 	public static List<String> readHighScores() {
 		List<String> highScores = new ArrayList<>();
 		try {
+			//read the highscores into a list
 			Scanner scanner = new Scanner(new File("highscores.csv"));
 			while(scanner.hasNextLine()) {
 				highScores.add(scanner.nextLine());
@@ -25,18 +26,19 @@ public class HighScoresManager {
 		List<String> highScores = readHighScores();
 		for (int i = 0; i < highScores.size(); i++) {
 			String[] splitHighScore = highScores.get(i).split(",");
-			if (Integer.parseInt(splitHighScore[0]) == size) { //find matching line
+			if (Integer.parseInt(splitHighScore[0]) == size) { //find matching line for the puzzle size
 				if (splitHighScore[1].equals("null") || splitHighScore[2].equals("null")) { //if there's no high score, set it
-					highScores.set(i, size + "," + time + "," + moves);
+					highScores.set(i, size + "," + time + "," + moves); //overwrite the corresponding line
 					isHighScore = true;
 				} else { //if there is a high score, compare it to our time
 					if (Integer.parseInt(splitHighScore[1]) > time) {
-						highScores.set(i, size + "," + time + "," + moves);
+						highScores.set(i, size + "," + time + "," + moves); //overwrite
 						isHighScore = true;
 					}
 				}
 			}
 		}
+		//if there is a high score, overwrite the file (with the corresponding high score line replaced)
 		if (isHighScore) {
 			try {
 				FileOutputStream file = new FileOutputStream("highscores.csv");
@@ -53,6 +55,7 @@ public class HighScoresManager {
 		
 		return isHighScore;
 	}
+	//resets the high scores to null
 	public static void reset() {
 		try {
 			FileOutputStream file = new FileOutputStream("highscores.csv");

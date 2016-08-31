@@ -57,6 +57,8 @@ public class PuzzleScreen extends JFrame {
 		ButtonListener buttonListener = new ButtonListener();
 		TimerListener timerListener = new TimerListener();
 		
+		
+		//Start the timer and get the current time
 		timer = new Timer(1000, timerListener);
 		timer.start();
 		startTime = System.currentTimeMillis();
@@ -70,27 +72,31 @@ public class PuzzleScreen extends JFrame {
 		
 		hintButton = new JButton("Hint");
 		hintButton.addActionListener(buttonListener);
+		
+		
+		//Resize image if it's too big to fit in the current window
 		BufferedImage resizedImage;
+		
 		Rectangle bounds = getBounds();
 		boolean largeWidth = image.getWidth() > bounds.width;
 		boolean largeHeight = image.getHeight() > bounds.height;
-		if (largeWidth || largeHeight) {
-			double widthRatio = ((double) (bounds.width - 50)) / image.getWidth();
-			double heightRatio = ((double) (bounds.height - 50)) / image.getHeight();
-			double ratio = Math.min(widthRatio, heightRatio);
-			int newWidth = (int) Math.round(image.getWidth() * ratio);
+		
+		if (largeWidth || largeHeight) { //if the image is wider or taller than the window
+			double widthRatio = ((double) (bounds.width - 50)) / image.getWidth(); //get the image width to window width ratio
+			double heightRatio = ((double) (bounds.height - 50)) / image.getHeight(); //get the image height to window height ratio
+			double ratio = Math.min(widthRatio, heightRatio); //get the smaller of the two ratios
+			int newWidth = (int) Math.round(image.getWidth() * ratio); //set the new width and height
 			int newHeight = (int) Math.round(image.getHeight() * ratio);
-			resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+			resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB); 
 			Graphics g = resizedImage.createGraphics();
-			g.drawImage(image, 0, 0, newWidth, newHeight, null);
+			g.drawImage(image, 0, 0, newWidth, newHeight, null); //draw the image with the new dimensions
 			g.dispose();
 		} else {
 			resizedImage = image;
 		}
 				
-
-		originalImages = ImagePuzzler.puzzlify(resizedImage, puzzleSize);
-		ImagePuzzler.TilesAndOrder tilesAndOrder = ImagePuzzler.shuffle(originalImages);
+		originalImages = ImagePuzzler.puzzlify(resizedImage, puzzleSize); //divides the image into tiles
+		ImagePuzzler.TilesAndOrder tilesAndOrder = ImagePuzzler.shuffle(originalImages); //shuffle the tiles and return the order
 		images = tilesAndOrder.tiles;
 		order = tilesAndOrder.order;
 		puzzleTileLabel = new JLabel[puzzleSize][puzzleSize];
@@ -168,7 +174,6 @@ public class PuzzleScreen extends JFrame {
 				for (int i = 0; i < size; i++) {
 					for (int j = 0; j < size; j++) {
 						if (!clicked && puzzleTileLabel[i][j].equals(e.getSource())) {
-							System.out.println("Clicked tile at row: " + j + ", column: " + i);
 							Coordinate top = new Coordinate(i, j - 1);
 							Coordinate right = new Coordinate(i + 1, j);
 							Coordinate bottom = new Coordinate(i, j + 1);
@@ -213,6 +218,10 @@ public class PuzzleScreen extends JFrame {
 		public void incrementMoves() {
 			moves++;
 			movesLabel.setText("Moves: " + moves);
+			//check if the puzzle has been solved
+			//if so: stop the timer and get elapsed time
+			//show a popup with the # of moves and amount of time
+			//check to see if the time is a new high score
 			if (ImagePuzzler.checkWin(order)) {
 				timer.stop();
 				int seconds = (int) ((System.currentTimeMillis() - startTime) / 1000);
@@ -246,6 +255,7 @@ public class PuzzleScreen extends JFrame {
 		public void mouseExited(MouseEvent e) {	}
 	}
 	private class Swap {
+		//remove all of the labels and redraws them, but in the new order
 		public void swap (int originalX, int originalY, int newX, int newY) {
 			Component[] components = puzzlePanel.getComponents();
 			int swapFrom = 0, swapTo = 0;
@@ -261,14 +271,19 @@ public class PuzzleScreen extends JFrame {
 			JLabel tempLabel = puzzleTileLabel[originalX][originalY];
 			puzzleTileLabel[originalX][originalY] = puzzleTileLabel[newX][newY];
 			puzzleTileLabel[newX][newY] = tempLabel;
+			
+			//swap the actual tiles
 			Component temp = components[swapFrom];
 			components[swapFrom] = components[swapTo];
 			components[swapTo] = temp;
-			System.out.println(order);
+			
+			//swap the int array keeping track of the order of the tiles
 			int tempInt = order.get(swapFrom);
 			order.set(swapFrom, order.get(swapTo));
 			order.set(swapTo, tempInt);
-			System.out.println(order);
+			
+			
+			//readd the tiles to the panel
 			int count = 0;
 			for (int x = 0; x < size; x++) {
 				for (int y = 0; y < size; y++) {
